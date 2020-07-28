@@ -190,9 +190,14 @@ const Profile: React.FC = () => {
             </Header>
 
             <ProfileContainer>
-              <UserAvatarButton onPress={handleUpdateAvatar}>
-                <UserAvatar source={{ uri: user.avatar_url }} />
-              </UserAvatarButton>
+              <UserAvatar
+                imageStyle={{ borderRadius: 98 }}
+                source={{ uri: user.avatar_url }}
+              >
+                <UserAvatarButton onPress={handleUpdateAvatar}>
+                  <Icon name="camera" size={24} color="#312538" />
+                </UserAvatarButton>
+              </UserAvatar>
 
               <Form initialData={user} ref={formRef} onSubmit={handleProfile}>
                 <Input

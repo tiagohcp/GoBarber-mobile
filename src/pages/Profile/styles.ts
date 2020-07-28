@@ -32,13 +32,24 @@ export const ProfileContainer = styled.View`
   padding: 118px 30px ${Platform.OS === 'android' ? 220 : 40}px;
 `;
 
-export const UserAvatarButton = styled.TouchableOpacity``;
-
-export const UserAvatar = styled.Image`
+export const UserAvatar = styled.ImageBackground`
   width: 186px;
   height: 186px;
-  border-radius: 98px;
   margin-top: 64px;
   margin-bottom: 24px;
   align-self: center;
+`;
+
+export const UserAvatarButton = styled.TouchableOpacity`
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  right: 0;
+  bottom: 0;
+  background: #ff9000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
