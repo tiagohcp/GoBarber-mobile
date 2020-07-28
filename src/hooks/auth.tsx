@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import React, {
   createContext,
   useCallback,
@@ -9,20 +8,26 @@ import React, {
 import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string;
+}
 interface AuthState {
   token: string;
-  user: object;
+  user: User;
 }
 
-interface SignInCredentials {
+interface SignCredencials {
   email: string;
   password: string;
 }
 
 interface AuthContextData {
-  user: object;
+  user: User;
   loading: boolean;
-  signIn(credintials: SignInCredentials): Promise<void>;
+  signIn(credentials: SignCredencials): Promise<void>;
   signOut(): void;
 }
 
@@ -40,11 +45,13 @@ export const AuthProvider: React.FC = ({ children }) => {
       ]);
 
       if (token[1] && user[1]) {
+        api.defaults.headers.authorization = `Bearer ${token[1]}`;
+
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+
       setLoading(false);
     }
-
     loadStorageData();
   }, []);
 
@@ -57,23 +64,22 @@ export const AuthProvider: React.FC = ({ children }) => {
     const { token, user } = response.data;
 
     await AsyncStorage.multiSet([
-      ['@GoBarber:user', token],
+      ['@GoBarber:token', token],
       ['@GoBarber:user', JSON.stringify(user)],
     ]);
+
+    api.defaults.headers.authorization = `Bearer ${token}`;
 
     setData({ token, user });
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(['@GoBarber:user', '@GoBarber:token']);
-
+    await AsyncStorage.multiRemove(['@GoBarber:token', '@GoBarber:user']);
     setData({} as AuthState);
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{ user: data.user, setLoading, signIn, signOut }}
-    >
+    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
@@ -83,7 +89,7 @@ export function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error('useAuth must be used whithin an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
 
   return context;
